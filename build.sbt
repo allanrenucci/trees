@@ -107,12 +107,12 @@ lazy val trees = project
   .dependsOn(common)
 
 // trigger publishLocal for trees module so that `sbt test` works out of the box.
-onLoad.in(Global) := {
-  val fn: State => State = { s =>
-    "publishTrees" :: s
-  }
-  fn compose onLoad.in(Global).value
-}
+// onLoad.in(Global) := {
+//   val fn: State => State = { s =>
+//     "publishTrees" :: s
+//   }
+//   fn compose onLoad.in(Global).value
+// }
 
 lazy val publishTrees = taskKey[Unit]("publishTrees")
 publishTrees := {
@@ -122,15 +122,16 @@ publishTrees := {
 
 lazy val parsers = project
   .in(file("scalameta/parsers/shared"))
+  .dependsOn(trees)
   .settings(
     // Temporary name to avoid conflicts with scalameta/scalameta modules.
     // Down the road, this build may get promoted to become the official
     // "common" and "trees" modules.
     moduleName := "parsers-experimental",
     macroDependencies(hardcore = true),
-    libraryDependencies ++= List(
-      "org.scalameta" %% "trees-experimental" % version.in(ThisBuild).value
-    ),
+    // libraryDependencies ++= List(
+    //   "org.scalameta" %% "trees-experimental" % version.in(ThisBuild).value
+    // ),
     unmanagedSourceDirectories.in(Compile) ++= {
       val root = baseDirectory.in(ThisBuild).value / "scalameta"
       List(
